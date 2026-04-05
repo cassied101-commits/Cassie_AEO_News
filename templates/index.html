@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cassie AEO News — Daily Brief</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- ── Header ── -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <div class="brand-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="14" r="13" stroke="currentColor" stroke-width="2"/>
+            <path d="M8 14h12M14 8l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Cassie AEO News</h1>
+          <p class="brand-sub">Daily intel on SEO · AEO · GEO · AI Search</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span id="api-key-badge" class="badge badge-warn hidden">No API Key</span>
+        <span id="last-updated" class="last-updated"></span>
+        <button id="refresh-btn" class="btn btn-primary" onclick="triggerRefresh()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-right:6px">
+            <path d="M13.5 8A5.5 5.5 0 1 1 8 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M8 1l3 2-3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Generate Today's Brief
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Main ── -->
+  <main class="main-content">
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast hidden"></div>
+
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+      <div class="loading-card">
+        <div class="spinner"></div>
+        <p class="loading-title">Generating your brief…</p>
+        <p class="loading-sub">Scanning news feeds, Google Trends &amp; LinkedIn signals. This takes ~20 seconds.</p>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="empty-state hidden">
+      <div class="empty-icon">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+          <circle cx="28" cy="28" r="27" stroke="#334155" stroke-width="2"/>
+          <path d="M18 28h20M28 18l10 10-10 10" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2>No briefs yet</h2>
+      <p>Hit "Generate Today's Brief" to pull the latest SEO / AEO / AI Search signals and get your first TL;DR.</p>
+      <button class="btn btn-primary" onclick="triggerRefresh()">Generate First Brief</button>
+    </div>
+
+    <!-- Feed container -->
+    <div id="feed" class="feed"></div>
+
+  </main>
+
+  <!-- ── Brief card template (hidden, cloned by JS) ── -->
+  <template id="brief-card-tpl">
+    <article class="brief-card">
+      <div class="card-header">
+        <div class="card-date-block">
+          <span class="card-date"></span>
+          <span class="card-time"></span>
+        </div>
+        <span class="card-sentiment"></span>
+      </div>
+
+      <div class="card-tldr">
+        <div class="tldr-label">TL;DR</div>
+        <p class="tldr-text"></p>
+      </div>
+
+      <div class="card-highlights">
+        <!-- injected by JS -->
+      </div>
+
+      <div class="card-watch">
+        <span class="watch-label">Watch list:</span>
+        <div class="watch-tags"><!-- injected by JS --></div>
+      </div>
+
+      <div class="card-footer">
+        <button class="expand-btn" onclick="toggleSources(this)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Show sources
+        </button>
+        <span class="card-counts"></span>
+      </div>
+
+      <div class="card-sources hidden">
+        <div class="sources-tabs">
+          <button class="tab-btn active" data-tab="news">News</button>
+          <button class="tab-btn" data-tab="trends">Trends</button>
+          <button class="tab-btn" data-tab="social">LinkedIn</button>
+        </div>
+        <div class="tab-panel active" data-panel="news">
+          <ul class="source-list news-list"></ul>
+        </div>
+        <div class="tab-panel" data-panel="trends">
+          <ul class="source-list trends-list"></ul>
+        </div>
+        <div class="tab-panel" data-panel="social">
+          <ul class="source-list social-list"></ul>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
