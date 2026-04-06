@@ -135,11 +135,13 @@ function buildCard(s, isLatest) {
   }
 
   // Source counts
-  const ac = s.article_count ?? (s.articles?.length ?? 0);
-  const tc = s.trend_count   ?? (s.trends?.length ?? 0);
-  const sc = s.social_count  ?? (s.linkedin_posts?.length ?? 0);
+  const ac = s.article_count    ?? (s.articles?.length ?? 0);
+  const tc = s.trend_count      ?? (s.trends?.length ?? 0);
+  const sc = s.social_count     ?? (s.linkedin_posts?.length ?? 0);
+  const ic = s.influencer_count ?? (s.influencer_posts?.length ?? 0);
+  const pc = s.platform_count   ?? (s.platform_posts?.length ?? 0);
   card.querySelector('.card-counts').textContent =
-    `${ac} articles · ${tc} trend signals · ${sc} social posts`;
+    `${ac} news · ${pc} platform · ${ic} influencer · ${tc} trends · ${sc} social`;
 
   // Sources — populated lazily when user expands
   card.dataset.date = s.date;
@@ -167,21 +169,29 @@ async function loadFullBrief(card, date) {
 function populateSources(card, full) {
   // News
   const newsList = card.querySelector('.news-list');
-  (full.articles || []).forEach(a => {
-    newsList.appendChild(buildNewsItem(a));
-  });
+  (full.articles || []).forEach(a => newsList.appendChild(buildNewsItem(a)));
+
+  // Platforms
+  const platformsList = card.querySelector('.platforms-list');
+  (full.platform_posts || []).forEach(p => platformsList.appendChild(buildNewsItem(p)));
+  if (!full.platform_posts?.length) {
+    platformsList.innerHTML = '<li class="source-meta" style="padding:8px 0">No platform announcements in this period.</li>';
+  }
+
+  // Influencers
+  const influencersList = card.querySelector('.influencers-list');
+  (full.influencer_posts || []).forEach(p => influencersList.appendChild(buildNewsItem(p)));
+  if (!full.influencer_posts?.length) {
+    influencersList.innerHTML = '<li class="source-meta" style="padding:8px 0">No influencer content indexed in this period.</li>';
+  }
 
   // Trends
   const trendsList = card.querySelector('.trends-list');
-  (full.trends || []).forEach(t => {
-    trendsList.appendChild(buildTrendItem(t));
-  });
+  (full.trends || []).forEach(t => trendsList.appendChild(buildTrendItem(t)));
 
   // Social / LinkedIn
   const socialList = card.querySelector('.social-list');
-  (full.linkedin_posts || []).forEach(p => {
-    socialList.appendChild(buildNewsItem(p));
-  });
+  (full.linkedin_posts || []).forEach(p => socialList.appendChild(buildNewsItem(p)));
 
   card.dataset.sourcesLoaded = 'true';
 }

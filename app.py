@@ -74,7 +74,10 @@ def run_pipeline() -> dict:
         raise RuntimeError("A generation is already in progress.")
     _is_generating = True
     try:
-        from fetcher import fetch_google_trends, fetch_linkedin_posts, fetch_news_articles
+        from fetcher import (
+            fetch_google_trends, fetch_linkedin_posts, fetch_news_articles,
+            fetch_influencer_posts, fetch_platform_news,
+        )
         from summarizer import generate_daily_brief
 
         logger.info("Pipeline: fetching news articles…")
@@ -86,11 +89,18 @@ def run_pipeline() -> dict:
         logger.info("Pipeline: fetching LinkedIn / social…")
         linkedin_posts = fetch_linkedin_posts()
 
+        logger.info("Pipeline: fetching influencer signals…")
+        influencer_posts = fetch_influencer_posts()
+
+        logger.info("Pipeline: fetching platform news…")
+        platform_posts = fetch_platform_news()
+
         logger.info(
-            "Pipeline: generating brief (articles=%d trends=%d social=%d)…",
+            "Pipeline: generating brief (articles=%d trends=%d social=%d influencers=%d platforms=%d)…",
             len(articles), len(trends), len(linkedin_posts),
+            len(influencer_posts), len(platform_posts),
         )
-        brief = generate_daily_brief(articles, trends, linkedin_posts)
+        brief = generate_daily_brief(articles, trends, linkedin_posts, influencer_posts, platform_posts)
         add_summary(brief)
         logger.info("Pipeline: done. Brief for %s saved.", brief["date"])
         return brief
